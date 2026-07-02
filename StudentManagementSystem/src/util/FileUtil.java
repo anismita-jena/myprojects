@@ -1,0 +1,72 @@
+package util;
+import model.Student;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FileUtil {
+    private static final String file_name = "students.txt";
+    private static final String sep= ",";
+    public static void saveStudents(List<Student> students) {
+        try (BufferedWriter bw=new BufferedWriter(new FileWriter(file_name))) {
+            for (Student student:students) {
+                String line = String.join(sep,
+                        String.valueOf(student.getId()),
+                        student.getName(),
+                        String.valueOf(student.getAge()),
+                        student.getGender(),
+                        student.getCourse(),
+                        student.getEmail(),
+                        student.getPhone(),
+                        String.valueOf(student.getMarks())
+                );
+                bw.write(line);
+                bw.newLine();
+            }
+            System.out.println("Student data saved to "+file_name);
+        } catch (IOException ex) {
+            System.out.println("Error saving student data: "+ex.getMessage());
+        }
+    }
+    public static List<Student>loadFile() {
+        List<Student>students=new ArrayList<>();
+        File file=new File(file_name);
+        if (!file.exists()) {
+            System.out.println("No existing data file found, Starting new");
+            return students;
+        }
+        try (BufferedReader br=new BufferedReader(new FileReader(file))) {
+            String line;
+            int lineNum= 0;
+            while ((line=br.readLine())!=null) {
+                lineNum++;
+                if (line.trim().isEmpty())
+                	continue;
+                try {
+                    String[] parts =line.split(sep, -1);
+                    if (parts.length != 8) {
+                        System.out.println("Skipping malformed line "+lineNum+": "+line);
+                        continue;
+                    }
+                    int id =Integer.parseInt(parts[0].trim());
+                    String name= parts[1].trim();
+                    int age= Integer.parseInt(parts[2].trim());
+                    String gender=parts[3].trim();
+                    String course=parts[4].trim();
+                    String email= parts[5].trim();
+                    String phone= parts[6].trim(); 
+                    double marks= Double.parseDouble(parts[7].trim());
+                    Student student = new Student(id,name , age,gender, course ,email, phone,marks);
+                    students.add(student);
+                    
+                }catch (NumberFormatException ex) {
+                    System.out.println("Skipping line "+lineNum+" due to invalid number format");
+                }
+            }
+            System.out.println("Loaded "+students.size()+" student records from "+file_name);
+        } catch (IOException ex) {
+            System.out.println("Error reading student data: "+ex.getMessage());
+        }
+        return students;
+    }
+}

@@ -1,0 +1,61 @@
+package service;
+import exception.StudentNotFoundException;
+import model.Student;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class StudentService {
+    private List<Student> students;
+
+    public StudentService() {
+        this.students=new ArrayList<>();
+    }
+    public void setStudents(List<Student> students) {
+        this.students=students!=null?students: new ArrayList<>();
+    }
+    public List<Student> getStudents() {
+        return students;
+    }
+    public boolean addStudent(Student student) {
+        for (Student s:students) {
+            if (s.getId()==student.getId())
+                return false;   
+        }
+        students.add(student);
+        return true;
+    }
+    public void updateStudent(int id, Student updated) throws StudentNotFoundException {
+        Student student = searchStudent(id);
+        student.setName(updated.getName());
+        student.setAge(updated.getAge());
+        student.setGender(updated.getGender());
+        student.setCourse(updated.getCourse());
+        student.setEmail(updated.getEmail());
+        student.setPhone(updated.getPhone());
+        student.setMarks(updated.getMarks());
+    }
+    public void deleteStudent(int id)throws StudentNotFoundException {
+        Student student=searchStudent(id);
+        students.remove(student);
+    }
+    public Student searchStudent(int id) throws StudentNotFoundException {
+        return students.stream().filter(s->s.getId()==id).findFirst().orElseThrow(()->new StudentNotFoundException("Student with ID " + id + " not found"));
+    }
+    public List<Student>searchStudent(String name) {
+        String query = name.toLowerCase();
+        return students.stream().filter(s->s.getName().toLowerCase().contains(query)).collect(Collectors.toList());
+    }
+    public void displayStudents() {
+        if (students.isEmpty()) {
+            System.out.println("No student records found");
+            return;
+        }
+        for (Student student:students) {
+            student.displayDetails(); 
+        }
+    }
+}
+
+	
+

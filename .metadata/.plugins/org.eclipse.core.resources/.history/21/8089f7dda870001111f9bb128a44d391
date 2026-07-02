@@ -1,0 +1,49 @@
+package model;
+public abstract class Person {
+	private String name;
+	private int age;
+	private String gender;
+	private String email;
+	private String phone;
+	
+	public Person() {}
+	
+    public Person(String name,int age,String gender,String email,String phone) {
+    	this.name=name;
+    	this.age=age;
+    	this.gender=gender;
+    	this.email=email;
+    	this.phone=phone;
+    }
+    public String get_name() {
+    	return name;
+    }
+    public int get_age() {
+    	return age;
+    }
+    public String get_gender() {
+    	return gender;
+    }
+    public String get_email() {
+    	return email;
+    }
+    public String get_phone() {
+    	return phone;
+    }
+    public void set_name(String name) {
+    	this.name=name;
+    }
+    public void set_age(int age) {
+    	this.age=age;
+    }
+    public void set_gender(String gender) {
+    	this.gender=gender;
+    }
+    public void set_email(String email){
+    	this.email=email;
+    }
+    public void set_phone(String phone) {
+    	this.phone=phone;
+    }
+    public abstract void displayDetails();
+}

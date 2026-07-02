@@ -1,0 +1,72 @@
+package util;
+import model.Student;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FileUtil {
+    private static final String file_name = "students.txt";
+    private static final String sep= ",";
+    public static void saveStudents(List<Student> record_list) {
+        try (BufferedWriter bw=new BufferedWriter(new FileWriter(file_name))) {
+            for (Student student:record_list) {
+                String line = String.join(sep,
+                        String.valueOf(student.get_Id()),
+                        student.get_name(),
+                        String.valueOf(student.get_age()),
+                        student.get_gender(),
+                        student.get_course(),
+                        student.get_email(),
+                        student.get_phone(),
+                        String.valueOf(student.get_marks())
+                );
+                bw.write(line);
+                bw.newLine();
+            }
+            System.out.println("Student data saved to "+file_name);
+        } catch (IOException ex) {
+            System.out.println("Error saving student data: "+ex.getMessage());
+        }
+    }
+    public static List<Student>loadFromFile() {
+        List<Student>record_list=new ArrayList<>();
+        File file=new File(file_name);
+        if (!file.exists()) {
+            System.out.println("No existing data file found, Starting new");
+            return record_list;
+        }
+        try (BufferedReader br=new BufferedReader(new FileReader(file))) {
+            String line;
+            int lineNum= 0;
+            while ((line=br.readLine())!=null) {
+                lineNum++;
+                if (line.trim().isEmpty())
+                	continue;
+                try {
+                    String[] parts =line.split(sep, -1);
+                    if (parts.length != 8) {
+                        System.out.println("Skipping malformed line "+lineNum+": "+line);
+                        continue;
+                    }
+                    int id =Integer.parseInt(parts[0].trim());
+                    String name= parts[1].trim();
+                    int age= Integer.parseInt(parts[2].trim());
+                    String gender=parts[3].trim();
+                    String course=parts[4].trim();
+                    String email= parts[5].trim();
+                    String phone= parts[6].trim(); 
+                    double marks= Double.parseDouble(parts[7].trim());
+                    Student student = new Student(id,name , age,gender, course ,email, phone,marks);
+                    record_list.add(student);
+                    
+                }catch (NumberFormatException ex) {
+                    System.out.println("Skipping line "+lineNum+" due to invalid number format: "+line);
+                }
+            }
+            System.out.println("Loaded "+record_list.size()+" student records from "+file_name);
+        } catch (IOException ex) {
+            System.out.println("Error reading student data: "+ex.getMessage());
+        }
+        return record_list;
+    }
+}

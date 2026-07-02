@@ -1,0 +1,191 @@
+import exception.StudentNotFoundException;
+import model.Student;
+import report.ReportGenerator;
+import service.StudentService;
+import util.FileUtil;
+
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final StudentService service = new StudentService();
+
+    public static void main(String[] args) {
+        service.setStudents(FileUtil.loadFile());
+
+        boolean running = true;
+        while (running){
+            printMenu();
+            int choice = readInt("Enter your choice: ");
+            switch (choice) {
+                case 1:
+                    addStudent();  
+                    break;
+                case 2:
+                    viewAllStudents();
+                    break;
+                case 3:
+                    searchStudent(); 
+                    break;
+                case 4:
+                    updateStudent(); 
+                    break;
+                case 5:
+                    deleteStudent(); 
+                    break;
+                case 6:
+                    generateReport();
+                    break;
+                case 7:
+                    saveData(); 
+                    break;
+                case 0:
+                    exitApplication();
+                    running= false;
+                    break;
+                default:
+                    System.out.println("Invalid choicee. select a valid option");
+            }
+            System.out.println();
+        }
+        scanner.close();
+    }
+    private static void printMenu() {
+        System.out.println("-------Student mangement system------");
+        System.out.println("1.Add Student");
+        System.out.println("2.View All Students");
+        System.out.println("3.Search Student (by ID or Name)");
+        System.out.println("4.Update Student");
+        System.out.println("5.Delete Student");
+        System.out.println("6.Generate Report");
+        System.out.println("7.Save Data");
+        System.out.println("0.Exit");
+    }
+    private static void addStudent() {
+        System.out.println("---Add Student---");
+        int id= readInt("Enter Student ID: ");
+        String name= readNonEmptyString("Enter Name: ");
+        int age= readInt("Enter Age: ");
+        String gender= readNonEmptyString("Enter Gender: ");
+        String course= readNonEmptyString("Enter Course: ");
+        String email= readNonEmptyString("Enter Email: ");
+        String phone= readNonEmptyString("Enter Phone: ");
+        double marks= readDouble("Enter Marks: ");
+
+        Student student= new Student(id, name, age, gender, course, email, phone, marks);
+        boolean added= service.addStudent(student);
+        if (added) {
+            System.out.println("Student added successfully.");
+        } else {
+            System.out.println("Error:A student with ID "+id+" already exists.Duplicate not added.");
+        }
+    }
+    private static void viewAllStudents() {
+        System.out.println("---All Students---");
+        service.displayStudents();
+    }
+    private static void searchStudent() {
+        System.out.println("---Search Student---");
+        System.out.println("1.Search by ID");
+        System.out.println("2.Search by Name");
+        int option= readInt("Choose an option: ");
+        if (option== 1) {
+            int id= readInt("Enter Student ID: ");
+            try {
+                Student student = service.searchStudent(id);
+                student.displayDetails();
+            } catch (StudentNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
+        } else if(option== 2) {
+            String name= readNonEmptyString("Enter Name (or part of it): ");
+            List<Student> results= service.searchStudent(name);
+            if(results.isEmpty()) {
+                System.out.println("No students found matching: " + name);
+            }else {
+                results.forEach(Student::displayDetails);
+            }
+        }else {
+            System.out.println("Invalid option.");
+        }
+    }
+    private static void updateStudent() {
+        System.out.println("---Update Student---");
+        int id = readInt("Enter Student ID to update: ");
+        try {
+            Student existing = service.searchStudent(id);
+            System.out.println("Current details:");
+            existing.displayDetails();
+
+            System.out.println("Enter new details:");
+            String name= readNonEmptyString("Enter Name: ");
+            int age= readInt("Enter Age: ");
+            String gender= readNonEmptyString("Enter Gender: ");
+            String course= readNonEmptyString("Enter Course: ");
+            String email= readNonEmptyString("Enter Email: ");
+            String phone= readNonEmptyString("Enter Phone: ");
+            double marks= readDouble("Enter Marks: ");
+
+            Student updated = new Student(id, name, age, gender, course, email, phone, marks);
+            service.updateStudent(id, updated);
+            System.out.println("Student updated successfully.");
+
+        } catch (StudentNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    private static void deleteStudent() {
+        System.out.println("---Delete Student---");
+        int id = readInt("Enter Student ID to delete: ");
+
+        try {
+            service.deleteStudent(id);
+            System.out.println("Student deleted successfully.");
+        } catch (StudentNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    private static void generateReport() {
+        ReportGenerator.summary_report(service.getStudents());
+    }
+    private static void saveData() {
+        FileUtil.saveStudents(service.getStudents());
+    }
+    private static void exitApplication() {
+        FileUtil.saveStudents(service.getStudents());
+        System.out.println("Data saved.Exiting...Goodbye!");
+    }
+    private static int readInt(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a whole number.");
+            }
+        }
+    }
+    private static double readDouble(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return Double.parseDouble(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+            }
+        }
+    }
+    private static String readNonEmptyString(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            if (!input.isEmpty()) {
+                return input;
+            }
+            System.out.println("Input cannot be empty. Please try again.");
+        }
+    }
+}

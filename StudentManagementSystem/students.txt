@@ -1,0 +1,6 @@
+101,annie,20,f,python,annie@gmail.com,3847574433,87.0
+102,Ansh,23,m,python,ansh@gmail.com,7823947122,89.0
+103,Khusi,15,f,c,khusi@gmail.com,4529438222,76.0
+104,Sujal,20,m,c++,sujal@gmail.com,2481983312,65.0
+105,Diya,21,m,java,diya@gmail.com,1094218712,54.0
+106,anisha,18,f,python,anisha@gmail.com,4758743538,79.0

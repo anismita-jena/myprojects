@@ -1,0 +1,53 @@
+package model;
+
+public class Student extends Person{
+	private int Id;
+	private String course;
+	private double marks;
+	
+	public Student() {
+		super();
+	}
+	public Student(int Id,String name,int age,
+			String gender,String course,String email,String phone,double marks) {
+		super(name,age,gender,email,phone);
+		this.Id=Id;
+		this.course=course;
+		this.marks=marks;
+	}
+	public int getId() {
+		return this.Id;
+	}
+	public String getCourse() {
+		return this.course;
+	}
+	public double getMarks() {
+		return this.marks;
+	}
+	public void setId( int Id) {
+		this.Id=Id;
+	}
+	public void setCourse(String course) {
+		this.course=course;
+	}
+	public void setMarks(double marks) {
+		this.marks=marks;
+	}
+	@Override
+	public void displayDetails() {
+		System.out.println("------------------------------");
+		System.out.println("id= "+Id);
+		System.out.println("name= "+ getName());
+		System.out.println("Gender= "+getGender());
+		System.out.println("Age= "+getAge());
+		System.out.println("course= "+course);
+		System.out.println("Email="+getEmail());
+		System.out.println("MARKS= "+marks);
+		System.out.println("Phone_no= "+getPhone());
+		System.out.println("------------------------------");	
+	}
+	@Override
+	public String toString() {
+		return Id+","+getName()+","+getGender() +","+getAge()+","+course+","+getEmail()+","+marks+","+getPhone();
+	}
+}

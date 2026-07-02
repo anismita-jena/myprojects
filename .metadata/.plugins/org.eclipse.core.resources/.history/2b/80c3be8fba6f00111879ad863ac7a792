@@ -1,0 +1,105 @@
+package service;
+
+import exception.StudentNotFoundException;
+import model.Student;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+
+public class StudentService {
+    private List<Student> students;
+
+    public StudentService() {
+        this.students = new ArrayList<>();
+    }
+    public void setStudents(List<Student> students) {
+        this.students = students != null ? students : new ArrayList<>();
+    }
+    public List<Student> getStudents() {
+        return students;
+    }
+    /**
+     * Add a new student. Checks if the student ID already exists.
+     * @param student The Student object to add.
+     * @return true if added successfully, false if ID already exists.
+     */
+    public boolean addStudent(Student student) {
+        for (Student s : students) {
+            if (s.getStudentId() == student.getStudentId()) {
+                return false; 
+            }
+        }
+        students.add(student);
+        return true;
+    }
+
+    /**
+     * Update an existing student's details.
+     * @param id The ID of the student to update.
+     * @param updated The Student object containing the new data.
+     * @throws StudentNotFoundException if student ID does not exist.
+     */
+    public void updateStudent(int id, Student updated) throws StudentNotFoundException {
+        Student student = searchStudent(id);
+        student.setName(updated.getName());
+        student.setAge(updated.getAge());
+        student.setGender(updated.getGender());
+        student.setCourse(updated.getCourse());
+        student.setEmail(updated.getEmail());
+        student.setPhone(updated.getPhone());
+        student.setMarks(updated.getMarks());
+    }
+
+    /**
+     * Delete a student by ID.
+     * @param id The ID of the student to delete.
+     * @throws StudentNotFoundException if student ID does not exist.
+     */
+    public void deleteStudent(int id) throws StudentNotFoundException {
+        Student student = searchStudent(id);
+        students.remove(student);
+    }
+
+    /**
+     * Search student by ID.
+     * @param id The ID of the student to search for.
+     * @return The Student object if found.
+     * @throws StudentNotFoundException if student ID does not exist.
+     */
+    public Student searchStudent(int id) throws StudentNotFoundException {
+        return students.stream()
+                .filter(s -> s.getStudentId() == id)
+                .findFirst()
+                .orElseThrow(() -> new StudentNotFoundException("Student with ID " + id + " not found."));
+    }
+
+    /**
+     * Search students by name (case-insensitive, matches sub-strings).
+     * @param name The name pattern to search for.
+     * @return A list of matching student objects.
+     */
+    public List<Student> searchStudent(String name) {
+        String query = name.toLowerCase();
+        return students.stream()
+                .filter(s -> s.getName().toLowerCase().contains(query))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Display details of all students.
+     * Demonstrates Polymorphism through calling displayDetails().
+     */
+    public void displayStudents() {
+        if (students.isEmpty()) {
+            System.out.println("No student records found.");
+            return;
+        }
+        for (Student student : students) {
+            student.displayDetails(); 
+        }
+    }
+}
+
+	
+

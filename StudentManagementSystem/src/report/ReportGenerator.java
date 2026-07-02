@@ -1,0 +1,48 @@
+package report;
+
+import model.Student;
+import java.util.List;
+import java.util.OptionalDouble;
+import java.util.Comparator;
+import java.util.stream.Collectors;
+
+public class ReportGenerator{
+	public static int getTotalStudents(List<Student> students) {
+		return students.size();
+	}
+	public static double getAvgMarks(List<Student> students) {
+		OptionalDouble avg=students.stream().mapToDouble(Student::getMarks).average();
+		return avg.orElse(0.0);
+	}
+	public static Student getTopper(List<Student> students) {
+		return students.stream().max(Comparator.comparingDouble(Student::getMarks)).orElse(null);
+	}
+	public static List<Student> getStudent_above80(List<Student>students){
+		return students.stream().filter(s->s.getMarks()>80).collect(Collectors.toList());
+	}
+	public static void summary_report(List<Student> students) {
+		System.out.println("------student summary report------");
+		if(students.isEmpty()) {
+			System.out.println("No student records available to form a report");
+			return;
+		}
+		System.out.println("Total students:"+getTotalStudents(students));
+		System.out.printf("Average marks: %.2f%n",getAvgMarks(students));
+		
+		Student topper=getTopper(students);
+		System.out.println("Topper: ");
+		if(topper!= null){
+			topper.displayDetails();
+		}
+		System.out.println("\nstudents have marks above 80%: ");
+		List<Student> top_students=getStudent_above80(students);
+		if(top_students.isEmpty()){
+			System.out.println("no students");
+		}else {
+			top_students.forEach(Student::displayDetails);
+		}
+		System.out.println("-------------------------");
+
+	}
+	
+}
